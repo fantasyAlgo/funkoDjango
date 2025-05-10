@@ -1,0 +1,371 @@
+{% load static %}
+{% load custom_tags %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PopVerse - {{ funko.name }}</title>
+  <link rel="stylesheet" href="{% static 'css/item.css' %}">
+  <link rel="stylesheet" href="{% static 'css/shop.css' %}">
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+  <header>
+    <div class="logo">PopVerse</div>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/shop" class="active">Shop</a>
+      <a href="#">About</a>
+      <a href="#">Contact</a>
+    </nav>
+  </header>
+
+  <div class="breadcrumb">
+    <a href="/">Home</a> &gt; 
+    <a href="/shop">Shop</a> &gt; 
+    <a href="/shop/{{ funko.category|lower }}">{{ funko.category }}</a> &gt; 
+    <span>{{ funko.name }}</span>
+  </div>
+
+  <section class="product-display">
+    <div class="product-images">
+      <div class="main-image">
+        <img src="{{ funko.link_image }}" alt="{{ funko.name }}" id="mainImage">
+      </div>
+      <div class="thumbnail-gallery">
+        <img src="{{ funko.link_image }}" alt="{{ funko.name }} - Front" class="thumbnail active" onclick="changeImage('{{ funko.link_image }}')">
+        <img src="{{ funko.link_image }}" alt="{{ funko.name }} - Side" class="thumbnail" onclick="changeImage('{{ funko.link_image }}')">
+        <img src="{{ funko.link_image }}" alt="{{ funko.name }} - Back" class="thumbnail" onclick="changeImage('{{ funko.link_image }}')">
+        <img src="{{ funko.link_image }}" alt="{{ funko.name }} - Box" class="thumbnail" onclick="changeImage('{{ funko.link_image }}')">
+      </div>
+    </div>
+    
+    <div class="product-info">
+      <div class="product-header">
+        <h1>{{ funko.name }}</h1>
+        <span class="product-badge new">New</span>
+      </div>
+      
+      <div class="product-meta">
+        <span class="product-id">Item #: {{ funko.id }}</span>
+        <span class="product-category">Category: {{ funko.category }}</span>
+      </div>
+      
+      <div class="product-price">
+        <h2>${{ funko.cost }}</h2>
+        {% if funko.original_cost %}
+        <span class="original-price">${{ funko.cost }}</span>
+        <span class="discount">Save {{ funko.cost }}%</span>
+        {% endif %}
+      </div>
+      
+      <div class="product-description">
+        <p>{{ funko.description|default:"This officially licensed Funko Pop figure brings your favorite character to life with the distinctive Funko style. Perfect for collectors and fans alike, this vinyl figure stands approximately 3.75 inches tall and comes in a window display box." }}</p>
+      </div>
+      
+      <div class="product-actions">
+        <div class="quantity-selector">
+          <button class="quantity-btn" onclick="decrementQuantity()">-</button>
+          <input type="number" id="quantity" value="1" min="1" max="10">
+          <button class="quantity-btn" onclick="incrementQuantity()">+</button>
+        </div>
+        <button class="add-to-cart">Add to Cart</button>
+        <button class="add-to-wishlist">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+          </svg>
+        </button>
+      </div>
+      
+      <div class="shipping-info">
+        <p><strong>Free shipping</strong> on orders over $50</p>
+        <p>Usually ships within 1-2 business days</p>
+      </div>
+      
+      <div class="payment-options">
+        <span>Payment options:</span>
+        <div class="payment-icons">
+          <div class="payment-icon">Visa</div>
+          <div class="payment-icon">MC</div>
+          <div class="payment-icon">Amex</div>
+          <div class="payment-icon">PayPal</div>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <section class="product-details">
+    <div class="details-tabs">
+      <button class="tab-btn active" onclick="openTab('description')">Description</button>
+      <button class="tab-btn" onclick="openTab('specifications')">Specifications</button>
+      <button class="tab-btn" onclick="openTab('shipping')">Shipping & Returns</button>
+      <button class="tab-btn" onclick="openTab('reviews')">Reviews</button>
+    </div>
+    
+    <div id="description" class="tab-content active">
+      <h3>About {{ funko.name }}</h3>
+      <p>{{ funko.description|default:"This officially licensed Funko Pop figure brings your favorite character to life with the distinctive Funko style. Perfect for collectors and fans alike, this vinyl figure stands approximately 3.75 inches tall and comes in a window display box." }}</p>
+      <p>Funko Pop! figures are vinyl figures that depict characters from pop culture, including those from television, movies, video games, and more. They are characterized by their square-shaped heads, black button eyes, and small bodies, giving them a cute, stylized appearance that appeals to collectors and fans.</p>
+    </div>
+    
+    <div id="specifications" class="tab-content">
+      <h3>Product Specifications</h3>
+      <table class="specs-table">
+        <tr>
+          <td>Brand</td>
+          <td>Funko</td>
+        </tr>
+        <tr>
+          <td>Series</td>
+          <td>Pop!</td>
+        </tr>
+        <tr>
+          <td>Dimensions</td>
+          <td>Approximately 3.75 inches (9.5 cm) tall</td>
+        </tr>
+        <tr>
+          <td>Material</td>
+          <td>Vinyl</td>
+        </tr>
+        <tr>
+          <td>Packaging</td>
+          <td>Window display box</td>
+        </tr>
+        <tr>
+          <td>Age Recommendation</td>
+          <td>3+</td>
+        </tr>
+        <tr>
+          <td>Release Date</td>
+          <td>{{ funko.release_date|default:"2025" }}</td>
+        </tr>
+      </table>
+    </div>
+    
+    <div id="shipping" class="tab-content">
+      <h3>Shipping Information</h3>
+      <p><strong>Shipping:</strong> Orders typically ship within 1-2 business days. Standard shipping takes 3-5 business days. Express shipping options are available at checkout.</p>
+      <p><strong>Free Shipping:</strong> All orders over $50 qualify for free standard shipping within the continental US.</p>
+      
+      <h3>Return Policy</h3>
+      <p>We offer a 30-day return policy for unopened items in their original packaging. To initiate a return, please contact our customer service team with your order number.</p>
+      <p>Please note that custom or limited edition items may not be eligible for return unless defective.</p>
+    </div>
+    
+    <div id="reviews" class="tab-content">
+      <h3>Customer Reviews</h3>
+      <div class="review-summary">
+        <div class="overall-rating">
+          <span class="rating">4.7</span>
+          <div class="stars">
+            <span class="star filled">★</span>
+            <span class="star filled">★</span>
+            <span class="star filled">★</span>
+            <span class="star filled">★</span>
+            <span class="star half">★</span>
+          </div>
+          <span class="review-count">Based on 42 reviews</span>
+        </div>
+        
+        <div class="rating-breakdown">
+          <div class="rating-bar">
+            <span class="rating-label">5 stars</span>
+            <div class="bar-container">
+              <div class="bar" style="width: 75%"></div>
+            </div>
+            <span class="rating-percent">75%</span>
+          </div>
+          <div class="rating-bar">
+            <span class="rating-label">4 stars</span>
+            <div class="bar-container">
+              <div class="bar" style="width: 18%"></div>
+            </div>
+            <span class="rating-percent">18%</span>
+          </div>
+          <div class="rating-bar">
+            <span class="rating-label">3 stars</span>
+            <div class="bar-container">
+              <div class="bar" style="width: 5%"></div>
+            </div>
+            <span class="rating-percent">5%</span>
+          </div>
+          <div class="rating-bar">
+            <span class="rating-label">2 stars</span>
+            <div class="bar-container">
+              <div class="bar" style="width: 2%"></div>
+            </div>
+            <span class="rating-percent">2%</span>
+          </div>
+          <div class="rating-bar">
+            <span class="rating-label">1 star</span>
+            <div class="bar-container">
+              <div class="bar" style="width: 0%"></div>
+            </div>
+            <span class="rating-percent">0%</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="review-list">
+        <div class="review">
+          <div class="review-header">
+            <div class="review-author">Michael T.</div>
+            <div class="review-date">April 15, 2025</div>
+          </div>
+          <div class="review-rating">
+            <span class="star filled">★</span>
+            <span class="star filled">★</span>
+            <span class="star filled">★</span>
+            <span class="star filled">★</span>
+            <span class="star filled">★</span>
+          </div>
+          <div class="review-title">Perfect Addition to My Collection!</div>
+          <div class="review-content">
+            <p>Arrived in perfect condition and looks amazing next to my other Pops. The details are fantastic and the colors are vibrant. Definitely recommend!</p>
+          </div>
+        </div>
+        
+        <div class="review">
+          <div class="review-header">
+            <div class="review-author">Sarah K.</div>
+            <div class="review-date">April 3, 2025</div>
+          </div>
+          <div class="review-rating">
+            <span class="star filled">★</span>
+            <span class="star filled">★</span>
+            <span class="star filled">★</span>
+            <span class="star filled">★</span>
+            <span class="star">★</span>
+          </div>
+          <div class="review-title">Great Figure, Fast Shipping</div>
+          <div class="review-content">
+            <p>Received my order much faster than expected! The figure is well-made with good attention to detail. Only taking off one star because the box had a small dent in one corner.</p>
+          </div>
+        </div>
+        
+        <div class="review">
+          <div class="review-header">
+            <div class="review-author">Alex B.</div>
+            <div class="review-date">March 27, 2025</div>
+          </div>
+          <div class="review-rating">
+            <span class="star filled">★</span>
+            <span class="star filled">★</span>
+            <span class="star filled">★</span>
+            <span class="star filled">★</span>
+            <span class="star filled">★</span>
+          </div>
+          <div class="review-title">A Must-Have!</div>
+          <div class="review-content">
+            <p>One of the best Funko Pops I've purchased. The quality is superb and it looks even better in person than in photos. Highly recommend to any collector!</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="load-more">
+        <button class="load-more-btn">Load More Reviews</button>
+      </div>
+    </div>
+  </section>
+  
+  <section class="related-products">
+    <h2>You May Also Like</h2>
+    <div class="product-grid">
+      {% for funko in related_funkos %}
+          <div class="product-card">
+            <img src="{{ funko.link_image }}" alt="{{ funko.name }}" class="product-image" width="100" height="100" />
+            <h3>{{ funko.name }}</h3>
+            <p>${{ funko.cost }}</p>
+            <div class="product-meta">
+              <span class="product-category">{{ funko.category }}</span>
+              {% if funko.exclusive %}
+                <span class="product-exclusive">Exclusive</span>
+              {% endif %}
+            </div>
+            <button>Add to Cart</button>
+          </div>
+      {% endfor %}    
+    </div>
+  </section>
+ 
+ 
+  <footer>
+    <div class="footer-content">
+      <div class="footer-section">
+        <h3>PopVerse</h3>
+        <p>Your ultimate destination for collectible Funko Pop figures.</p>
+      </div>
+      <div class="footer-section">
+        <h3>Quick Links</h3>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/shop">Shop</a></li>
+          <li><a href="#">About</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+      </div>
+      <div class="footer-section">
+        <h3>Newsletter</h3>
+        <p>Subscribe for updates on new arrivals and exclusive deals.</p>
+        <form class="newsletter-form">
+          <input type="email" placeholder="Your email">
+          <button type="submit">Subscribe</button>
+        </form>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2025 PopVerse. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+    function changeImage(src) {
+      document.getElementById('mainImage').src = src;
+      
+      // Update active thumbnail
+      let thumbnails = document.querySelectorAll('.thumbnail');
+      thumbnails.forEach(thumb => {
+        thumb.classList.remove('active');
+        if (thumb.getAttribute('src') === src) {
+          thumb.classList.add('active');
+        }
+      });
+    }
+    
+    function incrementQuantity() {
+      let quantityInput = document.getElementById('quantity');
+      let currentValue = parseInt(quantityInput.value);
+      if (currentValue < parseInt(quantityInput.max)) {
+        quantityInput.value = currentValue + 1;
+      }
+    }
+    
+    function decrementQuantity() {
+      let quantityInput = document.getElementById('quantity');
+      let currentValue = parseInt(quantityInput.value);
+      if (currentValue > parseInt(quantityInput.min)) {
+        quantityInput.value = currentValue - 1;
+      }
+    }
+    
+    function openTab(tabName) {
+      // Hide all tab content
+      let tabContents = document.querySelectorAll('.tab-content');
+      tabContents.forEach(tab => {
+        tab.classList.remove('active');
+      });
+      
+      // Remove active class from all tab buttons
+      let tabButtons = document.querySelectorAll('.tab-btn');
+      tabButtons.forEach(button => {
+        button.classList.remove('active');
+      });
+      
+      // Show the current tab and add active class to the button
+      document.getElementById(tabName).classList.add('active');
+      event.currentTarget.classList.add('active');
+    }
+  </script>
+</body>
+</html>
