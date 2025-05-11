@@ -8,3 +8,12 @@ class FunkoPop(models.Model):
     type = models.CharField(max_length = 100)
     link_image = models.CharField(max_length = 300)
     cost = models.IntegerField(default=0)
+
+class User(models.Model):
+    username = models.CharField(max_length = 200)
+    email = models.CharField(max_length = 200)
+    password = models.CharField(max_length = 200)
+    funkos = models.ManyToManyField(FunkoPop, related_name='funkos')
+
+
+

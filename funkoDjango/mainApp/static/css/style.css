@@ -5,6 +5,7 @@
   box-sizing: border-box;
 }
 
+
 body {
   font-family: 'Segoe UI', sans-serif;
   background-color: #f9f9f9;
@@ -117,3 +118,9 @@ footer {
   color: white;
   border-color: #3f5efb;
 }
+
+div a {
+  all: unset;
+  cursor: pointer;
+}
+

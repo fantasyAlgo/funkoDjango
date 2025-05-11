@@ -1,0 +1,183 @@
+{% load static %}
+{% load custom_tags %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PopVerse - Login</title>
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  <link rel="stylesheet" href="{% static 'css/login.css' %}">
+</head>
+<body>
+  <header>
+    <div class="logo"><a href="/">PopVerse</b></a></div>
+    <nav>
+      <a href="/" class="active"><b>Home</b></a>
+      <a href="shop">Shop</a>
+      {% if request.session.username %}
+        <a href="orders">Orders</a>
+        <a href="logout">logout</a>
+      {% else %}
+        <a href="login">login</a>
+      {% endif %}
+    </nav>
+  </header>
+
+
+  <div class="auth-container">
+    <div class="auth-card">
+      <div class="auth-header">
+        <h1>Welcome Back</h1>
+        <p>Sign in to access your account</p>
+      </div>
+      
+      <div class="auth-tabs">
+        <button class="auth-tab active" onclick="switchTab('login')">Login</button>
+        <button class="auth-tab" onclick="switchTab('register')">Register</button>
+      </div>
+      
+      <div id="login-form" class="auth-form active">
+        <form action="/login" method="post">
+          {% csrf_token %}
+          <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" name="email" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="password">Password</label>
+            <div class="password-input">
+              <input type="password" id="password" name="password" required>
+              <button type="button" class="toggle-password" onclick="togglePassword('password')">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+              </button>
+            </div>
+          </div>
+          
+          <div class="form-actions">
+            <label class="remember-me">
+              <input type="checkbox" name="remember">
+              <span>Remember me</span>
+            </label>
+            <a href="/forgot-password" class="forgot-password">Forgot password?</a>
+          </div>
+          
+          <button type="submit" class="auth-button">Sign In</button>
+        </form>
+        
+        <div class="divider">
+          <span>or continue with</span>
+        </div>
+        
+        <div class="social-login">
+          <button class="social-button google">
+            <span>Google</span>
+          </button>
+          <button class="social-button facebook">
+            <span>Facebook</span>
+          </button>
+        </div>
+      </div>
+      
+      <div id="register-form" class="auth-form">
+        <form action="/register" method="post">
+          {% csrf_token %}
+          <div class="form-group">
+            <label for="reg-name">Full Name</label>
+            <input type="text" id="reg-name" name="name" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="reg-email">Email Address</label>
+            <input type="email" id="reg-email" name="email" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="reg-password">Password</label>
+            <div class="password-input">
+              <input type="password" id="reg-password" name="password" required>
+              <button type="button" class="toggle-password" onclick="togglePassword('reg-password')">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+              </button>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="reg-confirm">Confirm Password</label>
+            <div class="password-input">
+              <input type="password" id="reg-confirm" name="confirm_password" required>
+              <button type="button" class="toggle-password" onclick="togglePassword('reg-confirm')">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+              </button>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label class="checkbox-label">
+              <input type="checkbox" name="terms" required>
+              <span>I agree to the <a href="/terms">Terms &amp; Conditions</a> and <a href="/privacy">Privacy Policy</a></span>
+            </label>
+          </div>
+          
+          <button type="submit" class="auth-button">Create Account</button>
+        </form>
+      </div>
+    </div>
+    
+    <div class="auth-background">
+      <div class="auth-promo">
+        <div class="auth-promo-content">
+          <h2>Join the PopVerse Community</h2>
+          <p>Create an account to:</p>
+          <ul>
+            <li>Track your orders</li>
+            <li>Save your favorite items</li>
+            <li>Receive exclusive offers</li>
+            <li>Get early access to new releases</li>
+          </ul>
+          <div class="auth-promo-image">
+            <img src="{% static 'images/funko-collection.png' %}" alt="Funko Pop Collection" onerror="this.src='/api/placeholder/300/200'; this.onerror=null;">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <script>
+    function switchTab(tabName) {
+      // Hide all forms
+      document.querySelectorAll('.auth-form').forEach(form => {
+        form.classList.remove('active');
+      });
+      
+      // Remove active class from all tabs
+      document.querySelectorAll('.auth-tab').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      
+      // Activate the clicked tab and corresponding form
+      document.getElementById(tabName + '-form').classList.add('active');
+      event.currentTarget.classList.add('active');
+    }
+    
+    function togglePassword(inputId) {
+      const input = document.getElementById(inputId);
+      input.type = input.type === 'password' ? 'text' : 'password';
+      
+      // Toggle icon if needed
+      // This example simply toggles visibility but you could also change the icon
+    }
+  </script>
+</body>
+</html>

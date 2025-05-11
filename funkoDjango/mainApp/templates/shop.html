@@ -11,12 +11,16 @@
 </head>
 <body>
   <header>
-    <div class="logo">PopVerse</div>
+    <div class="logo"><a href="/">PopVerse</b></a></div>
     <nav>
-      <a href="/">Home</a>
-      <a href="#" class="active">Shop</a>
-      <a href="#">About</a>
-      <a href="#">Contact</a>
+      <a href="/"><b>Home</b></a>
+      <a href="shop" class = "active">Shop</a>
+      {% if request.session.username %}
+        <a href="orders">Cart</a>
+        <a href="logout">Logout</a>
+      {% else %}
+        <a href="login">Login</a>
+      {% endif %}
     </nav>
   </header>
 
@@ -86,21 +90,25 @@
               <span class="product-exclusive">Exclusive</span>
             {% endif %}
           </div>
-          <button>Add to Cart</button>
+          <form method="POST" action="{% url 'add_to_cart' funko.id %}">
+            {% csrf_token %}
+            <button class="add-to-cart">Add to Cart</button>
+          </form>
+
         </div>
       {% endfor %}    
     </div>
 
     <div class="pagination">
-      <a href="/shop?it={{ it|decrement }}" class="page-link">&laquo;</a>
+      <a href="/shop?it={% url_replace it=it|decrement %}" class="page-link">&laquo;</a>
       {% for i in 6|range %}
         {% if i == it %}
-        <a href="/shop?it={{ i }}" class="page-link active">{{i}}</a>
+        <a href="{% url_replace it=i %}" class="page-link active">{{i}}</a>
         {% else %}
-        <a href="/shop?it={{ i }}" class="page-link">{{i}}</a>
+        <a href="{% url_replace it=i %}" class="page-link">{{i}}</a>
         {% endif %}
       {% endfor %}    
-      <a href="/shop?it={{ it|increment }}" class="page-link">&raquo;</a>
+      <a href="/shop?it={% url_replace it=it|increment %}" class="page-link">&raquo;</a>
 
     </div>
   </section>

@@ -1,0 +1,325 @@
+{% load static %}
+{% load custom_tags %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PopVerse - Checkout</title>
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  <link rel="stylesheet" href="{% static 'css/shop.css' %}">
+  <link rel="stylesheet" href="{% static 'css/payment.css' %}">
+</head>
+<body>
+  <header>
+    <div class="logo"><a href="/">PopVerse</a></div>
+    <nav>
+      <a href="/"><b>Home</b></a>
+      <a href="shop">Shop</a>
+      {% if request.session.username %}
+        <a href="cart" class="active">Cart</a>
+        <a href="logout">Logout</a>
+      {% else %}
+        <a href="login">Login</a>
+      {% endif %}
+    </nav>
+  </header>
+
+  <section class="checkout-progress">
+    <div class="progress-container">
+      <div class="progress-step completed">
+        <div class="step-circle">1</div>
+        <div class="step-label">Cart</div>
+      </div>
+      <div class="progress-line"></div>
+      <div class="progress-step active">
+        <div class="step-circle">2</div>
+        <div class="step-label">Payment</div>
+      </div>
+      <div class="progress-line"></div>
+      <div class="progress-step">
+        <div class="step-circle">3</div>
+        <div class="step-label">Confirmation</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="checkout-container">
+    <div class="checkout-content">
+      <div class="checkout-form">
+        <h2>Payment Information</h2>
+        
+        <div class="form-section">
+          <h3>Shipping Address</h3>
+          <div class="form-grid">
+            <div class="form-group full-width">
+              <label for="fullname">Full Name</label>
+              <input type="text" id="fullname" placeholder="John Doe" required>
+            </div>
+            <div class="form-group full-width">
+              <label for="address">Street Address</label>
+              <input type="text" id="address" placeholder="123 Main Street" required>
+            </div>
+            <div class="form-group">
+              <label for="city">City</label>
+              <input type="text" id="city" placeholder="New York" required>
+            </div>
+            <div class="form-group">
+              <label for="state">State/Province</label>
+              <input type="text" id="state" placeholder="NY" required>
+            </div>
+            <div class="form-group">
+              <label for="zip">ZIP/Postal Code</label>
+              <input type="text" id="zip" placeholder="10001" required>
+            </div>
+            <div class="form-group">
+              <label for="country">Country</label>
+              <select id="country" required>
+                <option value="EU">EU</option>
+                <option value="Italy">Italy</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h3>Payment Method</h3>
+          <div class="payment-methods">
+            <div class="payment-method active">
+              <input type="radio" id="credit-card" name="payment-method" checked>
+              <label for="credit-card">Credit Card</label>
+            </div>
+          </div>
+
+          <div class="payment-details credit-card-details">
+            <div class="card-icons">
+              <span class="card-icon visa"></span>
+              <span class="card-icon mastercard"></span>
+              <span class="card-icon amex"></span>
+              <span class="card-icon discover"></span>
+            </div>
+            <div class="form-grid">
+              <div class="form-group full-width">
+                <label for="card-number">Card Number</label>
+                <input type="text" id="card-number" placeholder="1234 5678 9012 3456" required>
+              </div>
+              <div class="form-group">
+                <label for="expiry">Expiration Date</label>
+                <input type="text" id="expiry" placeholder="MM/YY" required>
+              </div>
+              <div class="form-group">
+                <label for="cvv">CVV</label>
+                <input type="text" id="cvv" placeholder="123" required>
+              </div>
+              <div class="form-group full-width">
+                <label for="name-on-card">Name on Card</label>
+                <input type="text" id="name-on-card" placeholder="John Doe" required>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+
+      </div>
+
+      <div class="order-summary">
+        <h2>Order Summary</h2>
+        <div class="order-items">
+          <h3>Items ({{ cart_items|length|default:"3" }})</h3>
+          {% if cart_items %}
+            {% for item in cart_items %}
+              <div class="summary-item">
+                <div class="item-thumbnail">
+                  <img src="{{ item.link_image }}" alt="{{ item.name }}">
+                </div>
+                <div class="item-info">
+                  <h4>{{ item.name }}</h4>
+                  <div class="item-meta">
+                    <span class="item-quantity">Qty: {{ item.quantity }}</span>
+                    <span class="item-price">${{ item.total_cost }}</span>
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+          {% else %}
+            <!-- Default example items -->
+            <div class="summary-item">
+              <div class="item-thumbnail">
+                <div class="placeholder-image"></div>
+              </div>
+              <div class="item-info">
+                <h4>Spider-Man (Miles Morales)</h4>
+                <div class="item-meta">
+                  <span class="item-quantity">Qty: 1</span>
+                  <span class="item-price">$24.99</span>
+                </div>
+              </div>
+            </div>
+            <div class="summary-item">
+              <div class="item-thumbnail">
+                <div class="placeholder-image"></div>
+              </div>
+              <div class="item-info">
+                <h4>Iron Man (Mark 85)</h4>
+                <div class="item-meta">
+                  <span class="item-quantity">Qty: 2</span>
+                  <span class="item-price">$49.98</span>
+                </div>
+              </div>
+            </div>
+          {% endif %}
+        </div>
+
+        <div class="promo-code">
+          <input type="text" placeholder="Promo Code">
+          <button>Apply</button>
+        </div>
+
+        <div class="cost-breakdown">
+          <div class="cost-row">
+            <span>Subtotal</span>
+            <span>${{ subtotal|default:"74.97" }}</span>
+          </div>
+          <div class="cost-row">
+            <span>Shipping</span>
+            <span>${{ shipping_cost|default:"5.99" }}</span>
+          </div>
+          <div class="cost-row">
+            <span>Tax</span>
+            <span>${{ tax|default:"6.75" }}</span>
+          </div>
+          <div class="cost-row total">
+            <span>Total</span>
+            <span>${{ total|default:"87.71" }}</span>
+          </div>
+        </div>
+        <button class="place-order-btn">
+          <a href="clear_cart">Place order</a>
+        </button> 
+        <a href="cart" class="back-to-cart">Back to Cart</a>
+        
+        <div class="secure-checkout">
+          <div class="secure-icon"></div>
+          <p>Secure Checkout</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-content">
+      <div class="footer-section">
+        <h3>PopVerse</h3>
+        <p>Your ultimate destination for collectible Funko Pop figures.</p>
+      </div>
+      <div class="footer-section">
+        <h3>Quick Links</h3>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="shop">Shop</a></li>
+        </ul>
+      </div>
+      <div class="footer-section">
+        <h3>Newsletter</h3>
+        <p>Subscribe for updates on new arrivals and exclusive deals.</p>
+        <form class="newsletter-form">
+          <input type="email" placeholder="Your email">
+          <button type="submit">Subscribe</button>
+        </form>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2025 PopVerse. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Payment method toggle
+      const paymentMethods = document.querySelectorAll('.payment-method');
+      const paymentDetails = document.querySelectorAll('.payment-details');
+      
+      // Place order button animation
+      const placeOrderBtn = document.querySelector('.place-order-btn');
+      /*placeOrderBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        // Add loading state
+        this.classList.add('loading');
+        this.textContent = 'Processing...';
+        
+        // Simulate form validation and submission
+        setTimeout(() => {
+          // Check if the form is valid (this would normally be more comprehensive)
+          const requiredInputs = document.querySelectorAll('input[required]');
+          let isValid = true;
+          
+          requiredInputs.forEach(input => {
+            if (!input.value) {
+              isValid = false;
+              input.classList.add('error');
+            } else {
+              input.classList.remove('error');
+            }
+          });
+          
+          if (isValid) {
+            // Redirect to confirmation page (in a real app)
+            window.location.href = 'cart';
+          } else {
+            // Reset button state
+            this.classList.remove('loading');
+            this.textContent = 'Place Order';
+            
+            // Show validation message
+            alert('Please fill in all required fields.');
+          }
+        }, 1500);
+      });*/
+      
+      // Basic form validation styling
+      const formInputs = document.querySelectorAll('input, select');
+      formInputs.forEach(input => {
+        input.addEventListener('blur', function() {
+          if (this.hasAttribute('required') && !this.value) {
+            this.classList.add('error');
+          } else {
+            this.classList.remove('error');
+          }
+        });
+      });
+      
+      // Format credit card number with spaces
+      const cardNumberInput = document.getElementById('card-number');
+      if (cardNumberInput) {
+        cardNumberInput.addEventListener('input', function(e) {
+          let value = e.target.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+          let formattedValue = '';
+          
+          for (let i = 0; i < value.length; i++) {
+            if (i > 0 && i % 4 === 0) {
+              formattedValue += ' ';
+            }
+            formattedValue += value[i];
+          }
+          
+          e.target.value = formattedValue;
+        });
+      }
+      
+      // Format expiry date
+      const expiryInput = document.getElementById('expiry');
+      if (expiryInput) {
+        expiryInput.addEventListener('input', function(e) {
+          let value = e.target.value.replace(/\D/g, '');
+          if (value.length > 2) {
+            value = value.slice(0, 2) + '/' + value.slice(2, 4);
+          }
+          e.target.value = value;
+        });
+      }
+    });
+  </script>
+</body>
+</html>
