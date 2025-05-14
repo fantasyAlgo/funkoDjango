@@ -12,9 +12,9 @@
 </head>
 <body>
   <header>
-    <div class="logo"><a href="">PopVerse</b></a></div>
+    <div class="logo"><a href="/">PopVerse</b></a></div>
     <nav>
-      <a href="" class="active"><b>Home</b></a>
+      <a href="/" class="active"><b>Home</b></a>
       <a href="shop">Shop</a>
       {% if request.session.username %}
         <a href="orders">Cart</a>
@@ -215,65 +215,63 @@
       </div>
       
       <div class="review-list">
-        <div class="review">
-          <div class="review-header">
-            <div class="review-author">Michael T.</div>
-            <div class="review-date">April 15, 2025</div>
+        {% for review in reviews %}
+          <div class="review">
+            <div class="review-header">
+              <div class="review-author">{{ review.user.username }}</div>
+              <div class="review-date">{{ review.date }}</div>
+            </div>
+            <div class="review-rating">
+              {% for _ in review.stars|range %}
+                <span class="star filled">★</span>
+              {% endfor %}    
+            </div>
+            <div class="review-title"> {{ review.title}} </div>
+            <div class="review-content">
+              <p> {{ review.description }} </p>
+            </div>
           </div>
-          <div class="review-rating">
-            <span class="star filled">★</span>
-            <span class="star filled">★</span>
-            <span class="star filled">★</span>
-            <span class="star filled">★</span>
-            <span class="star filled">★</span>
-          </div>
-          <div class="review-title">Perfect Addition to My Collection!</div>
-          <div class="review-content">
-            <p>Arrived in perfect condition and looks amazing next to my other Pops. The details are fantastic and the colors are vibrant. Definitely recommend!</p>
-          </div>
-        </div>
-        
-        <div class="review">
-          <div class="review-header">
-            <div class="review-author">Sarah K.</div>
-            <div class="review-date">April 3, 2025</div>
-          </div>
-          <div class="review-rating">
-            <span class="star filled">★</span>
-            <span class="star filled">★</span>
-            <span class="star filled">★</span>
-            <span class="star filled">★</span>
-            <span class="star">★</span>
-          </div>
-          <div class="review-title">Great Figure, Fast Shipping</div>
-          <div class="review-content">
-            <p>Received my order much faster than expected! The figure is well-made with good attention to detail. Only taking off one star because the box had a small dent in one corner.</p>
-          </div>
-        </div>
-        
-        <div class="review">
-          <div class="review-header">
-            <div class="review-author">Alex B.</div>
-            <div class="review-date">March 27, 2025</div>
-          </div>
-          <div class="review-rating">
-            <span class="star filled">★</span>
-            <span class="star filled">★</span>
-            <span class="star filled">★</span>
-            <span class="star filled">★</span>
-            <span class="star filled">★</span>
-          </div>
-          <div class="review-title">A Must-Have!</div>
-          <div class="review-content">
-            <p>One of the best Funko Pops I've purchased. The quality is superb and it looks even better in person than in photos. Highly recommend to any collector!</p>
-          </div>
-        </div>
+        {% endfor %}    
       </div>
-      
       <div class="load-more">
         <button class="load-more-btn">Load More Reviews</button>
       </div>
-    </div>
+      {% if request.session.username %}
+      <div class="add-review-section">
+        <h3>Write a Review</h3>
+        <form method="POST" action="{% url 'add_review' funko.id %}" class="review-form">
+          {% csrf_token %}
+          <div class="form-group">
+            <label for="review-title">Title</label>
+            <input type="text" id="review-title" name="title" placeholder="Review title" required>
+          </div>
+          <div class="form-group">
+            <label for="review-rating">Rating</label>
+            <div class="rating-select">
+              <input type="radio" id="star5" name="rating" value="5" required>
+              <label for="star5">★</label>
+              <input type="radio" id="star4" name="rating" value="4">
+              <label for="star4">★</label>
+              <input type="radio" id="star3" name="rating" value="3">
+              <label for="star3">★</label>
+              <input type="radio" id="star2" name="rating" value="2">
+              <label for="star2">★</label>
+              <input type="radio" id="star1" name="rating" value="1">
+              <label for="star1">★</label>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="review-content">Your Review</label>
+            <textarea id="review-content" name="description" rows="5" placeholder="Share your thoughts about this product" required></textarea>
+          </div>
+          <button type="submit" class="submit-review-btn">Submit Review</button>
+        </form>
+      </div>
+      {% else %}
+      <div class="review-login-prompt">
+        <p>Please <a href="{% url 'login' %}">log in</a> to leave a review.</p>
+      </div>
+      {% endif %}
   </section>
   
   <section class="related-products">

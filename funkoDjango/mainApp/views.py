@@ -1,5 +1,6 @@
+from asyncio import wait
 from django.shortcuts import render, HttpResponse
-from .models import FunkoPop, User
+from .models import FunkoPop, Review, User
 from django.http import HttpResponseBadRequest
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.hashers import check_password
@@ -38,7 +39,8 @@ def item(request):
         return redirect("/shop")
     funko = FunkoPop.objects.get(id=id)
     related_funkos = FunkoPop.objects.filter(category=funko.category)
-    return render(request, "item.html", {"funko" : funko, "related_funkos" : related_funkos[:4]} )
+    reviews = Review.objects.filter(item=funko)
+    return render(request, "item.html", {"funko" : funko, "related_funkos" : related_funkos[:4], "reviews" : reviews})
 
 def login(request):
     if request.method == "POST":
@@ -58,6 +60,7 @@ def login(request):
     else:
         return render(request, "login.html")
 
+
 def register(request):
     if request.method == "POST":
         username = request.POST.get("name")
@@ -72,6 +75,8 @@ def register(request):
     else:
         return render(request, "login.html")
 
+
+
 def add_to_cart(request, product_id):
     if 'username' not in request.session:
         return redirect("/login")
@@ -82,6 +87,7 @@ def add_to_cart(request, product_id):
         return redirect("/login")
     user.funkos.add(funko)
     return redirect("/shop")
+
 def remove_from_cart(request):
     if 'username' not in request.session:
         return redirect("/login")
@@ -90,6 +96,8 @@ def remove_from_cart(request):
     funko = FunkoPop.objects.filter(id=id).first()
     user.funkos.remove(funko)
     return redirect("/orders")
+
+
 
 def orders(request):
     if 'username' not in request.session:
@@ -119,4 +127,15 @@ def clear_cart(request):
     user = User.objects.filter(username=request.session.get("username")).first()
     user.funkos.clear()
     return redirect("/")
+
+def add_review(request, funko_id):
+    if 'username' not in request.session:
+        return redirect("/login")
+    user = User.objects.filter(username=request.session.get("username")).first()
+    funko = FunkoPop.objects.get(id=funko_id)
+    title =       request.POST.get("title")
+    description = request.POST.get("description")
+    stars =       request.POST.get("rating")
+    Review.objects.create(title=title,description=description, stars=stars, user=user, item=funko)
+    return redirect(f"/item?item={funko_id}")
 
