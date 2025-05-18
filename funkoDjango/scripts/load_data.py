@@ -43,7 +43,7 @@ def getText(m):
     return final_text
 
 funkos = []
-for i in range(500):
+for i in range(500, 700):
     f = data[i]
     desc = getText(f["title"])
     funkos.append(FunkoPop(name=f["title"], 

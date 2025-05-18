@@ -36,8 +36,15 @@ def getText(m):
         final_text += (chunk.choices[0].delta.content or "")
     return final_text
 
-for funko in tqdm(FunkoPop.objects.all()):
+funkos = FunkoPop.objects.all()
+for i in tqdm(range(500, 700)):
+    funko = funkos[i]
     funko.category = getText(funko.name)
     funko.cost += 15
     funko.save()
+
+#for funko in tqdm(FunkoPop.objects.all()):
+#    funko.category = getText(funko.name)
+#    funko.cost += 15
+#    funko.save()
 
