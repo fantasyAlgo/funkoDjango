@@ -69,11 +69,6 @@
       </div>
       
       <div class="product-actions">
-        <div class="quantity-selector">
-          <button class="quantity-btn" onclick="decrementQuantity()">-</button>
-          <input type="number" id="quantity" value="1" min="1" max="10">
-          <button class="quantity-btn" onclick="incrementQuantity()">+</button>
-        </div>
         <form method="POST" action="{% url 'add_to_cart' funko.id %}">
           {% csrf_token %}
           <button class="add-to-cart">Add to Cart</button>
@@ -312,8 +307,6 @@
         <ul>
           <li><a href="/">Home</a></li>
           <li><a href="/shop">Shop</a></li>
-          <li><a href="#">About</a></li>
-          <li><a href="#">Contact</a></li>
         </ul>
       </div>
       <div class="footer-section">
@@ -342,22 +335,6 @@
           thumb.classList.add('active');
         }
       });
-    }
-    
-    function incrementQuantity() {
-      let quantityInput = document.getElementById('quantity');
-      let currentValue = parseInt(quantityInput.value);
-      if (currentValue < parseInt(quantityInput.max)) {
-        quantityInput.value = currentValue + 1;
-      }
-    }
-    
-    function decrementQuantity() {
-      let quantityInput = document.getElementById('quantity');
-      let currentValue = parseInt(quantityInput.value);
-      if (currentValue > parseInt(quantityInput.min)) {
-        quantityInput.value = currentValue - 1;
-      }
     }
     
     function openTab(tabName) {

@@ -5,6 +5,8 @@ from django.http import HttpResponseBadRequest
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.hashers import check_password
 from django.shortcuts import redirect
+from django.contrib.postgres.search import TrigramSimilarity
+from django.db.models import F
 
 def home(request):
     funkos = FunkoPop.objects.all()
@@ -12,16 +14,20 @@ def home(request):
 
 def shop(request):
     funkos = FunkoPop.objects.all()
-    # Selection part
-    try:
+    if "search" in request.GET:
+        search = request.GET.get("search")
+        funkos = funkos.filter(name=search)
+
+    if "category" in request.GET:
         cat = request.GET.get("category")
-        priceRange = request.GET.get("price")
-        sort = request.GET.get("sort")
-        print("category: ", cat)
-        if cat != None and cat != "Other":
-            funkos = FunkoPop.objects.filter(category = cat)
-    except:
-        pass
+        funkos = funkos.filter(category = cat)
+    if "price" in request.GET:
+        priceRange = request.GET.get("price").split("-")
+        if priceRange[0] == "50+":
+            funkos = funkos.filter(cost__range=(50, 1000))
+        else:
+            funkos = funkos.filter(cost__range=(int(priceRange[0]), int(priceRange[1])))
+
     if len(funkos) == 0:
         return render(request, "shop.html", {"funkos" : [], "it" : 1})
 
