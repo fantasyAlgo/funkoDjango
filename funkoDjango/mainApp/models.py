@@ -1,7 +1,8 @@
+# Create your models here.
+
 from django.db import models
 from datetime import date
 
-# Create your models here.
 class FunkoPop(models.Model):
     name = models.CharField(max_length = 200)
     description = models.TextField(blank=True, null=True)
@@ -25,4 +26,5 @@ class Review(models.Model):
     item = models.ForeignKey(FunkoPop, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     date = models.DateField(default=date.today)
+
 
