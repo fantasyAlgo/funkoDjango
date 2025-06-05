@@ -1,11 +1,12 @@
 
+
 fetch('http://127.0.0.1:8006/')
   .then(response => response.json()) // Convert response to JSON
   .then(funkos => {
 
     const container = document.querySelector('.product-grid');
     console.log(container)
-    for (let i = 0; i < Math.min(8, funkos.length); i++) {
+    for (let i = 0; i < Math.min(50, funkos.length); i++) {
       const funko = funkos[i];
       const div = document.createElement('div');
       div.className = 'product-card';
