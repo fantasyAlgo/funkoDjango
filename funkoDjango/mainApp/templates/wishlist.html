@@ -1,0 +1,197 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PopVerse - Your Wishlist</title>
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  <link rel="stylesheet" href="{% static 'css/shop.css' %}">
+  <link rel="stylesheet" href="{% static 'css/wishlist.css' %}">
+</head>
+<body>
+  <header>
+    <div class="logo"><a href="/">PopVerse</a></div>
+    <nav>
+      <a href="/"><b>Home</b></a>
+      <a href="shop">Shop</a>
+      {% if request.session.username %}
+        <a href="orders">Cart</a>
+        <a href="wishlist" class="active">Wishlist</a>
+        <a href="logout">Logout</a>
+      {% else %}
+        <a href="login">Login</a>
+      {% endif %}
+    </nav>
+  </header>
+
+  <section class="wishlist-hero">
+    <h1>Your Wishlist</h1>
+    <p>Keep track of your favorite Funko Pops</p>
+  </section>
+
+  <section class="wishlist-container">
+    {% if wishlist_items %}
+      <div class="wishlist-items">
+        {% for item in wishlist_items %}
+          <div class="wishlist-item">
+            <div class="item-image">
+              <img src="{{ item.link_image }}" alt="{{ item.name }}" width="100" height="125">
+            </div>
+            <div class="item-details">
+              <h3>{{ item.name }}</h3>
+              <span class="item-category">{{ item.category }}</span>
+              {% if item.exclusive %}
+                <span class="product-exclusive">Exclusive</span>
+              {% endif %}
+              <div class="item-price">${{ item.cost }}</div>
+            </div>
+            <div class="item-actions">
+              <a href="/add_to_cart/{{item.id}}" data-item-id="{{ item.id }}" class="add-to-cart-btn">Add to Cart</a>
+              <a href="/remove_from_wishlist/id={{item.id}}" data-item-id="{{ item.id }}" class="remove-btn">Remove</a>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+
+      <div class="wishlist-summary">
+        <h2>Wishlist Summary</h2>
+        <div class="summary-stats">
+          <div class="stat-item">
+            <span class="stat-number">{{ wishlist_items|length }}</span>
+            <span class="stat-label">Items</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-number">${{ subtotal }}</span>
+            <span class="stat-label">Total Value</span>
+          </div>
+        </div>
+        <div class="wishlist-actions">
+          <button class="add-all-btn">
+            <a href="/add_all_to_cart">Add All to Cart</a>
+          </button>
+          <button class="clear-wishlist-btn">
+            <a href="/clear_wishlist">Clear Wishlist</a>
+          </button>
+        </div>
+        <a href="shop" class="continue-shopping">Continue Shopping</a>
+      </div>
+    {% else %}
+      <div class="empty-wishlist">
+        <div class="empty-wishlist-message">
+          <h2>Your wishlist is empty</h2>
+          <p>Start adding your favorite Funko Pops to keep track of them!</p>
+          <a href="shop" class="cta-button">Browse Our Collection</a>
+        </div>
+      </div>
+    {% endif %}
+  </section>
+
+  <footer>
+    <div class="footer-content">
+      <div class="footer-section">
+        <h3>PopVerse</h3>
+        <p>Your ultimate destination for collectible Funko Pop figures.</p>
+      </div>
+      <div class="footer-section">
+        <h3>Quick Links</h3>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="shop">Shop</a></li>
+        </ul>
+      </div>
+      <div class="footer-section">
+        <h3>Newsletter</h3>
+        <p>Subscribe for updates on new arrivals and exclusive deals.</p>
+        <form class="newsletter-form">
+          <input type="email" placeholder="Your email">
+          <button type="submit">Subscribe</button>
+        </form>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2025 PopVerse. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const removeBtns = document.querySelectorAll('.remove-btn');
+      const addToCartBtns = document.querySelectorAll('.add-to-cart-btn');
+      
+      removeBtns.forEach(btn => {
+        btn.addEventListener('click', function(e) {
+          e.preventDefault();
+
+          const itemId = this.dataset.itemId;
+          const wishlistItem = this.closest('.wishlist-item');
+          wishlistItem.classList.add('removing');
+          
+          // Simulate item removal with animation
+          setTimeout(() => {
+            wishlistItem.remove();
+            updateWishlistStats();
+            
+            // Check if wishlist is empty
+            if (document.querySelectorAll('.wishlist-item').length === 0) {
+              showEmptyWishlist();
+            }
+          }, 300);
+          fetch(`/remove_from_wishlist?id=${itemId}`).then(
+            res => {
+              console.log("success!")
+            })
+
+        });
+      });
+      
+      addToCartBtns.forEach(btn => {
+        btn.addEventListener('click', function(e) {
+          e.preventDefault();
+          const button = this;
+          const itemId = this.dataset.itemId;
+          const originalText = button.textContent;
+          
+          // Show feedback
+          button.textContent = 'Added!';
+          button.style.background = '#28a745';
+          
+          // Reset button after delay
+          setTimeout(() => {
+            button.textContent = originalText;
+            button.style.background = '#3f5efb';
+          }, 1500);
+          fetch(`/add_to_cart/${itemId}`).then(
+            res => {
+              console.log("success!")
+            });
+        });
+      });
+      
+      function updateWishlistStats() {
+        const itemCount = document.querySelectorAll('.wishlist-item').length;
+        const statNumber = document.querySelector('.stat-number');
+        if (statNumber) {
+          statNumber.textContent = itemCount;
+        }
+      }
+      
+      function showEmptyWishlist() {
+        document.querySelector('.wishlist-items').remove();
+        document.querySelector('.wishlist-summary').remove();
+        
+        const emptyWishlist = document.createElement('div');
+        emptyWishlist.className = 'empty-wishlist';
+        emptyWishlist.innerHTML = `
+          <div class="empty-wishlist-message">
+            <h2>Your wishlist is empty</h2>
+            <p>Start adding your favorite Funko Pops to keep track of them!</p>
+            <a href="shop" class="cta-button">Browse Our Collection</a>
+          </div>
+        `;
+        document.querySelector('.wishlist-container').appendChild(emptyWishlist);
+      }
+    });
+  </script>
+</body>
+</html>

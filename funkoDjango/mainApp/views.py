@@ -1,7 +1,7 @@
 from asyncio import wait
 from django.shortcuts import render, HttpResponse
 from .models import FunkoPop, Review, User
-from django.http import HttpResponseBadRequest
+from django.http import HttpResponseBadRequest, JsonResponse
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.hashers import check_password
 from django.shortcuts import redirect
@@ -46,7 +46,24 @@ def item(request):
     funko = FunkoPop.objects.get(id=id)
     related_funkos = FunkoPop.objects.filter(category=funko.category)
     reviews = Review.objects.filter(item=funko)
-    return render(request, "item.html", {"funko" : funko, "related_funkos" : related_funkos[:4], "reviews" : reviews})
+    sizeReviews = len(reviews)
+    average_rating = round(sum([ r.stars for r in reviews])/sizeReviews, 2)
+    perc_stars = [0,0,0,0,0,0]
+    for r in reviews:
+        perc_stars[r.stars] += 1.0
+    for i in range(6):
+        perc_stars[i] /= sizeReviews/100
+        perc_stars[i] = round(perc_stars[i], 2)
+
+    return render(request, "item.html", {"funko" : funko, 
+                                         "related_funkos" : related_funkos[:4], 
+                                         "reviews" : reviews, 
+                                         "average_rating" : average_rating, 
+                                         "perc_1stars" : perc_stars[1],
+                                         "perc_2stars" : perc_stars[2],
+                                         "perc_3stars" : perc_stars[3],
+                                         "perc_4stars" : perc_stars[4],
+                                         "perc_5stars" : perc_stars[5]})
 
 def login(request):
     if request.method == "POST":
@@ -102,6 +119,15 @@ def remove_from_cart(request):
     funko = FunkoPop.objects.filter(id=id).first()
     user.funkos.remove(funko)
     return redirect("/orders")
+def remove_from_wishlist(request):
+    if 'username' not in request.session:
+        return redirect("/login")
+    user = User.objects.filter(username=request.session.get("username")).first()
+    id = request.GET.get("id")
+    funko = FunkoPop.objects.filter(id=id).first()
+    user.wishedFunkos.remove(funko)
+    return redirect("/orders")
+
 
 
 
@@ -115,6 +141,13 @@ def orders(request):
         totalCost += f.cost
     return render(request, "cart.html", {"cart_items" : funkos, "subtotal" : totalCost, "total" : totalCost+9.5})
 
+def wishlist(request):
+    if 'username' not in request.session:
+        return redirect("/login")
+    user = User.objects.filter(username=request.session.get("username")).first()
+    funkos = user.wishedFunkos.all()
+    totalCost = sum([f.cost for f in funkos])
+    return render(request, "wishlist.html", {"wishlist_items" : funkos, "subtotal" : totalCost})
 
 def logout(request):
     request.session.pop('username', None)
@@ -144,4 +177,19 @@ def add_review(request, funko_id):
     stars =       request.POST.get("rating")
     Review.objects.create(title=title,description=description, stars=stars, user=user, item=funko)
     return redirect(f"/item?item={funko_id}")
+
+def add_to_wishlist(request):
+    if 'username' not in request.session:
+        return redirect("/login")
+    product_id = request.GET.get("product_id")
+    user = User.objects.filter(username=request.session.get("username")).first()
+    funko = FunkoPop.objects.filter(id=product_id).first()
+
+    if user == None or funko == None:
+        return redirect("/login")
+    user.wishedFunkos.add(funko)
+    return JsonResponse({'status': 'success', 'product_id': product_id})
+
+
+
 

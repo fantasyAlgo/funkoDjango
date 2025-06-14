@@ -4,6 +4,7 @@
 import os
 import django
 import sys
+from tqdm import tqdm
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "funkoDjango.settings")
@@ -43,7 +44,7 @@ def getText(m):
     return final_text
 
 funkos = []
-for i in range(500, 700):
+for i in tqdm(range(700, 1000)):
     f = data[i]
     desc = getText(f["title"])
     funkos.append(FunkoPop(name=f["title"], 

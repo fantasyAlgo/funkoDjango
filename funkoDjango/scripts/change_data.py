@@ -37,7 +37,7 @@ def getText(m):
     return final_text
 
 funkos = FunkoPop.objects.all()
-for i in tqdm(range(500, 700)):
+for i in tqdm(range(700, 1000)):
     funko = funkos[i]
     funko.category = getText(funko.name)
     funko.cost += 15
