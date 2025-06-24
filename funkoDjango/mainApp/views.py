@@ -47,13 +47,15 @@ def item(request):
     related_funkos = FunkoPop.objects.filter(category=funko.category)
     reviews = Review.objects.filter(item=funko)
     sizeReviews = len(reviews)
-    average_rating = round(sum([ r.stars for r in reviews])/sizeReviews, 2)
     perc_stars = [0,0,0,0,0,0]
-    for r in reviews:
-        perc_stars[r.stars] += 1.0
-    for i in range(6):
-        perc_stars[i] /= sizeReviews/100
-        perc_stars[i] = round(perc_stars[i], 2)
+    average_rating = 0
+    if sizeReviews > 0:
+        average_rating = round(sum([ r.stars for r in reviews])/sizeReviews, 2)
+        for r in reviews:
+            perc_stars[r.stars] += 1.0
+        for i in range(6):
+            perc_stars[i] /= sizeReviews/100
+            perc_stars[i] = round(perc_stars[i], 2)
 
     return render(request, "item.html", {"funko" : funko, 
                                          "related_funkos" : related_funkos[:4], 
@@ -189,6 +191,34 @@ def add_to_wishlist(request):
         return redirect("/login")
     user.wishedFunkos.add(funko)
     return JsonResponse({'status': 'success', 'product_id': product_id})
+
+
+def add_all_to_cart(request):
+    if 'username' not in request.session:
+        return redirect("/login")
+    user = User.objects.filter(username=request.session.get("username")).first()
+    wishlist = user.wishedFunkos.all()
+    for funko in wishlist:
+        user.funkos.add(funko)
+    return redirect("/orders")
+def clear_wishlist(request):
+    if 'username' not in request.session:
+        return redirect("/login")
+    user = User.objects.filter(username=request.session.get("username")).first()
+    user.wishedFunkos.all().delete()
+    return redirect("/wishlist")
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
